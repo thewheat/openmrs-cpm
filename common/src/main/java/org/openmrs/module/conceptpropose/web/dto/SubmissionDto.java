@@ -12,6 +12,7 @@ public class SubmissionDto {
 
 	private String proposedConceptPackageUuid;
 
+	private String server;
 
 	private List<ProposedConceptDto> concepts;
 
@@ -56,12 +57,20 @@ public class SubmissionDto {
 		this.concepts = concepts;
 	}
 
+	public String getServer() {
+		return server;
+	}
+
+	public void setServer(final String server) {
+		this.server = server;
+	}
 	@Override
 	public String toString() {
 		return "SubmissionDto{" +
 				"description='" + description + '\'' +
 				", email='" + email + '\'' +
 				", name='" + name + '\'' +
+				", server='" + server + '\'' +
 				'}';
 	}
 }

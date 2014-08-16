@@ -28,6 +28,8 @@ public abstract class ShareablePackage<P extends ShareableProposal> extends Base
 
 	private String description;
 
+	private String server;
+
 	protected Set<P> proposedConcepts = new HashSet<P>();
 
 	private PackageStatus status;
@@ -62,6 +64,15 @@ public abstract class ShareablePackage<P extends ShareableProposal> extends Base
 	
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+
+	public String getServer() {
+		return server;
+	}
+
+	public void setServer(String server) {
+		this.server = server;
 	}
 
 	@Transient

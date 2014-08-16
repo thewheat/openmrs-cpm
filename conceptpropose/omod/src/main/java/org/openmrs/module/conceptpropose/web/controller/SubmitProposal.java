@@ -57,7 +57,7 @@ public class SubmitProposal {
 		//
 
 		AdministrationService service = Context.getAdministrationService();
-        SubmissionDto submission = submissionDtoFactory.create(conceptPackage);
+        SubmissionDto submission = submissionDtoFactory.create(conceptPackage, service.getGlobalProperty(CpmConstants.SETTINGS_URL_PROPERTY));
 
 		HttpHeaders headers = httpHeaderFactory.create(service.getGlobalProperty(CpmConstants.SETTINGS_USER_NAME_PROPERTY),
                 service.getGlobalProperty(CpmConstants.SETTINGS_PASSWORD_PROPERTY));

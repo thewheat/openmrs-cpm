@@ -27,13 +27,14 @@ public class SubmissionDtoFactory {
     }
 
 
-    public SubmissionDto create(final ProposedConceptPackage conceptPackage){
+    public SubmissionDto create(final ProposedConceptPackage conceptPackage, final String server){
 
         SubmissionDto submission = new SubmissionDto();
 	    submission.setProposedConceptPackageUuid(conceptPackage.getUuid());
         submission.setName(conceptPackage.getName());
         submission.setEmail(conceptPackage.getEmail());
         submission.setDescription(conceptPackage.getDescription());
+		submission.setServer(server);
 
         final ArrayList<ProposedConceptDto> list = new ArrayList<ProposedConceptDto>();
         for (ProposedConcept proposedConcept : conceptPackage.getProposedConcepts()) {
