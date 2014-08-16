@@ -7,6 +7,7 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.conceptreview.api.ProposedConceptReviewService;
 import org.openmrs.module.conceptreview.api.db.ProposedConceptPackageReviewDAO;
 import org.openmrs.module.conceptreview.ProposedConceptReviewPackage;
+import org.openmrs.module.conceptreview.ProposedConceptReview;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -50,4 +51,10 @@ public class ProposedConceptReviewServiceImpl extends BaseOpenmrsService impleme
 	public void deleteProposedConceptReviewPackageById(final int proposalId) throws APIException {
 		proposalReviewDao.deleteConceptProposalReviewPackageById(proposalId);
 	}
+
+	@Override
+	public ProposedConceptReview getProposedConceptReviewByProposalUuidAndConceptUuid(String packageUuid, String conceptUuid) throws APIException{
+		return proposalReviewDao.getConceptProposalReviewBySourceProposalUuidAndSourceConceptUuid(packageUuid, conceptUuid);
+	}
+
 }
