@@ -1,11 +1,14 @@
 package org.openmrs.module.conceptpropose.web.controller;
 
+import org.directwebremoting.util.Logger;
+import org.joda.time.DateTime;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.conceptpropose.web.dto.CommentDto;
 import org.openmrs.module.conceptpropose.web.service.ConceptProposeMapperService;
 import org.openmrs.module.conceptpropose.PackageStatus;
 import org.openmrs.module.conceptpropose.ProposedConcept;
@@ -45,6 +48,8 @@ public class ProposalController {
     private final NameDtoFactory nameDtoFactory;
 
 	private final ConceptProposeMapperService mapperService;
+
+	protected final Logger log = Logger.getLogger(getClass());
 
     public static class ProposalSubmissionException extends RuntimeException {
         private final HttpStatus httpStatus;
@@ -200,7 +205,45 @@ public class ProposalController {
 
 		return newPackage;
 	}
+	//
+	// Proposer-Reviewer webservice endpoints
+	//
+	@RequestMapping(value = "/conceptpropose/concept/{proposalUuid}/{conceptUuid}/comment", method = RequestMethod.POST)
+	public @ResponseBody ProposedConceptPackageDto addComment(@PathVariable String proposalUuid, @PathVariable String conceptUuid, @RequestBody final CommentDto incomingComment) {
+		// TODO - throw exception on error?
 
+		final ProposedConceptService proposedConceptService = Context.getService(ProposedConceptService.class);
+		final ProposedConceptPackage conceptPackage = proposedConceptService.getProposedConceptPackageByUuid(proposalUuid);
+		final ConceptService conceptService = Context.getConceptService();
+		final Concept sourceConcept = conceptService.getConceptByUuid(conceptUuid);
+
+		if(conceptPackage != null) {
+			for (ProposedConcept proposedConcept : conceptPackage.getProposedConcepts()) {
+				// if (concept.getUuid().equals(sourceConceptUUID)) {
+				if(proposedConcept.getConcept().getId().equals(sourceConcept.getId())) {
+					String currentComment = proposedConcept.getComment();
+
+					proposedConcept.setComment((currentComment == null ? "" : currentComment + "\n") +
+							"=======================================================\n" +
+							DateTime.now().toString("yyyy-MM-dd:HH:mm:ss ") + incomingComment.getName() + " (" + incomingComment.getEmail() + ")\n" +
+							"-------------------------------------------------------\n" +
+							incomingComment.getComment());
+
+
+					if (proposedConceptService.saveProposedConceptPackage(conceptPackage) != null){
+						return createProposedConceptPackageDto(conceptPackage);
+					}
+					else {
+						log.error("Error saving comment");
+					}
+				}
+			}
+		}
+		else{
+			log.error((conceptPackage != null ? "Concept not found (searching for UUID: " + conceptUuid + ")" : "Proposal Package not found (searching for UUID: " + proposalUuid + ")"));
+		}
+		return null;
+	}
 	@RequestMapping(value = "/conceptpropose/proposals/{proposalId}", method = RequestMethod.PUT)
 	public @ResponseBody ProposedConceptPackageDto updateProposal(@PathVariable final String proposalId,
                                                                   @RequestBody final ProposedConceptPackageDto updatedPackage) {
