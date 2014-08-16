@@ -44,8 +44,7 @@ public class DictionaryManagerController {
 	// Proposer-Reviewer webservice endpoints
     //
 	@RequestMapping(value = "/conceptreview/dictionarymanager/{sourceUUID}/{sourceConceptUUID}/comment", method = RequestMethod.POST)
-	public @ResponseBody
-	ProposedConceptReviewDto addComment(@PathVariable String sourceUUID, @PathVariable String sourceConceptUUID, @RequestBody final CommentDto incomingComment) throws IOException {
+	public @ResponseBody ProposedConceptReviewDto addComment(@PathVariable String sourceUUID, @PathVariable String sourceConceptUUID, @RequestBody final CommentDto incomingComment) throws IOException {
 		final ProposedConceptReviewService service = Context.getService(ProposedConceptReviewService.class);
 		final ProposedConceptReviewPackage aPackage = service.getProposedConceptReviewPackageByProposalUuid(sourceUUID);
 		final ProposedConceptReview proposedConcept = service.getProposedConceptReviewByProposalUuidAndConceptUuid(sourceUUID, sourceConceptUUID);
@@ -59,6 +58,14 @@ public class DictionaryManagerController {
 					incomingComment.getComment());
 			service.saveProposedConceptReviewPackage(aPackage);
 		}
+		return DtoFactory.createProposedConceptReviewDto(proposedConcept);
+	}
+
+	@RequestMapping(value = "/conceptreview/dictionarymanager/{sourceUUID}/{sourceConceptUUID}/comment", method = RequestMethod.GET)
+	public @ResponseBody ProposedConceptReviewDto addComment(@PathVariable String sourceUUID, @PathVariable String sourceConceptUUID) throws IOException {
+		final ProposedConceptReviewService service = Context.getService(ProposedConceptReviewService.class);
+		final ProposedConceptReviewPackage aPackage = service.getProposedConceptReviewPackageByProposalUuid(sourceUUID);
+		final ProposedConceptReview proposedConcept = service.getProposedConceptReviewByProposalUuidAndConceptUuid(sourceUUID, sourceConceptUUID);
 		return DtoFactory.createProposedConceptReviewDto(proposedConcept);
 	}
 

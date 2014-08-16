@@ -66,7 +66,7 @@ public abstract class ShareablePackage<P extends ShareableProposal> extends Base
 		this.description = description;
 	}
 
-
+	@Column()
 	public String getServer() {
 		return server;
 	}

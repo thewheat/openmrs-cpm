@@ -229,8 +229,10 @@ public class ProposalController {
 							"-------------------------------------------------------\n" +
 							incomingComment.getComment());
 
-
+					incomingComment.setProposedConceptPackageUuid(proposalUuid);
+					incomingComment.setProposedConceptUuid(conceptUuid);
 					if (proposedConceptService.saveProposedConceptPackage(conceptPackage) != null){
+						submitProposal.addComment(incomingComment);
 						return createProposedConceptPackageDto(conceptPackage);
 					}
 					else {
