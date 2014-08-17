@@ -149,7 +149,7 @@ public class ProposalController {
 		proposal.setConcepts(new ArrayList<ProposedConceptDto>());
 		proposal.setName(getDisplayName(user));
 		proposal.setEmail(getNotificationEmail(user));
-		
+
 		if (Strings.isNullOrEmpty(proposal.getEmail())) {
 			ProposedConceptPackage mostRecentProposal = Context.getService(ProposedConceptService.class).getMostRecentConceptProposalPackage();
 			if (mostRecentProposal != null) {
@@ -208,6 +208,38 @@ public class ProposalController {
 	//
 	// Proposer-Reviewer webservice endpoints
 	//
+	@RequestMapping(value = "/conceptpropose/concept/{proposalUuid}/{conceptUuid}/comment", method = RequestMethod.PUT)
+	public @ResponseBody ProposedConceptPackageDto setComment(@PathVariable String proposalUuid, @PathVariable String conceptUuid, @RequestBody final CommentDto incomingComment) {
+		// TODO - throw exception on error?
+
+		final ProposedConceptService proposedConceptService = Context.getService(ProposedConceptService.class);
+		final ProposedConceptPackage conceptPackage = proposedConceptService.getProposedConceptPackageByUuid(proposalUuid);
+		final ConceptService conceptService = Context.getConceptService();
+		final Concept sourceConcept = conceptService.getConceptByUuid(conceptUuid);
+
+		if(conceptPackage != null) {
+			for (ProposedConcept proposedConcept : conceptPackage.getProposedConcepts()) {
+				// if (concept.getUuid().equals(sourceConceptUUID)) {
+				if(proposedConcept.getConcept().getId().equals(sourceConcept.getId())) {
+					proposedConcept.setComment(incomingComment.getComment());
+					incomingComment.setProposedConceptPackageUuid(proposalUuid);
+					incomingComment.setProposedConceptUuid(conceptUuid);
+					if (proposedConceptService.saveProposedConceptPackage(conceptPackage) != null){
+						submitProposal.addComment(incomingComment);
+						return createProposedConceptPackageDto(conceptPackage);
+					}
+					else {
+						log.error("Error saving comment");
+					}
+				}
+			}
+		}
+		else{
+			log.error((conceptPackage != null ? "Concept not found (searching for UUID: " + conceptUuid + ")" : "Proposal Package not found (searching for UUID: " + proposalUuid + ")"));
+		}
+		return null;
+	}
+
 	@RequestMapping(value = "/conceptpropose/concept/{proposalUuid}/{conceptUuid}/comment", method = RequestMethod.POST)
 	public @ResponseBody ProposedConceptPackageDto addComment(@PathVariable String proposalUuid, @PathVariable String conceptUuid, @RequestBody final CommentDto incomingComment) {
 		// TODO - throw exception on error?
@@ -243,6 +275,49 @@ public class ProposalController {
 		}
 		else{
 			log.error((conceptPackage != null ? "Concept not found (searching for UUID: " + conceptUuid + ")" : "Proposal Package not found (searching for UUID: " + proposalUuid + ")"));
+		}
+		return null;
+	}
+	@RequestMapping(value = "/conceptpropose/proposals/{proposalId}/{conceptId}/comment", method = RequestMethod.POST)
+	public @ResponseBody ProposedConceptPackageDto addCommentByIds(@PathVariable int proposalId, @PathVariable int  conceptId, @RequestBody final CommentDto incomingComment) {
+		// TODO - throw exception on error?
+
+		final ProposedConceptService proposedConceptService = Context.getService(ProposedConceptService.class);
+		final ProposedConceptPackage conceptPackage = proposedConceptService.getProposedConceptPackageById(proposalId);
+		final ConceptService conceptService = Context.getConceptService();
+		final Concept sourceConcept = conceptService.getConcept(conceptId);
+
+		log.error("Package N: " + conceptPackage);
+		log.error("Concept N: " + sourceConcept);
+		if(conceptPackage!= null)
+			log.error("Package: " + conceptPackage.getUuid());
+		if(sourceConcept!= null)
+			log.error("Concept: " + sourceConcept.getUuid());
+		if(conceptPackage != null) {
+			for (ProposedConcept proposedConcept : conceptPackage.getProposedConcepts()) {
+				// if (concept.getUuid().equals(sourceConceptUUID)) {
+				if(proposedConcept.getConcept().getId().equals(sourceConcept.getId())) {
+					String currentComment = proposedConcept.getComment();
+
+					proposedConcept.setComment((currentComment == null ? "" : currentComment + "\n") +
+							"=======================================================\n" +
+							DateTime.now().toString("yyyy-MM-dd:HH:mm:ss ") + incomingComment.getName() + " (" + incomingComment.getEmail() + ")\n" +
+							"-------------------------------------------------------\n" +
+							incomingComment.getComment());
+					incomingComment.setProposedConceptPackageUuid(conceptPackage.getUuid());
+					incomingComment.setProposedConceptUuid(sourceConcept.getUuid());
+					if (proposedConceptService.saveProposedConceptPackage(conceptPackage) != null){
+						submitProposal.addComment(incomingComment);
+						return createProposedConceptPackageDto(conceptPackage);
+					}
+					else {
+						log.error("Error saving comment");
+					}
+				}
+			}
+		}
+		else{
+			log.error((conceptPackage != null ? "Concept not found (searching for id: " + conceptId + ")" : "Proposal Package not found (searching for id: " + proposalId + ")"));
 		}
 		return null;
 	}

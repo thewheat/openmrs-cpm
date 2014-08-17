@@ -38,7 +38,6 @@ public class AddComment {
 	}
 
 	void addComment(final CommentDto comment, final ProposedConceptReviewPackage conceptReviewPackage) {
-		log.error("submissionRestTemplate: " + submissionRestTemplate);
 		checkNotNull(submissionRestTemplate);
 
 		//
@@ -49,16 +48,15 @@ public class AddComment {
 		AdministrationService service = Context.getAdministrationService();
 //		HttpHeaders headers = httpHeaderFactory.create(service.getGlobalProperty(CpmConstants.SETTINGS_USER_NAME_PROPERTY),
 //				service.getGlobalProperty(CpmConstants.SETTINGS_PASSWORD_PROPERTY));
-		HttpHeaders headers = httpHeaderFactory.create("admin", "Admin123");   // TODO - needs a fix
+		HttpHeaders headers = httpHeaderFactory.create("admin", "Admin123");   // TODO - needs a fix. need to use common module login for this?
+		log.error("Header Auth: " + headers.get("Authorization"));
 		final HttpEntity requestEntity = new HttpEntity<CommentDto>(comment, headers);
 
-		// TODO - needs a fix
-		// final String url = service.getGlobalProperty(conceptReviewPackage.getServer()) + "/ws/conceptpropose/concept/" + comment.getProposedConceptPackageUuid() + "/" + comment.getProposedConceptUuid() + "/comment";
-		final String url = "http://192.168.33.10:8080/openmrs" + "/ws/conceptpropose/concept/" + comment.getProposedConceptPackageUuid() + "/" + comment.getProposedConceptUuid() + "/comment";
-		log.error("url: " + url);
+		final String url = conceptReviewPackage.getServer() + "/ws/conceptpropose/concept/" + comment.getProposedConceptPackageUuid() + "/" + comment.getProposedConceptUuid() + "/comment";
+		log.info("Posting to Proposer's OpenMRS server: " + url);
 		try {
 			final ProposedConceptPackageDto result = submissionRestTemplate.postForObject(url, requestEntity, ProposedConceptPackageDto.class);
-			log.error("Result: " + result);
+			log.info("Result: " + result);
 //			if (result.getStatus() == SubmissionResponseStatus.FAILURE) {
 //				log.error("Failed submitting proposal. Server Responded (200) but with Failure Status.");
 //				throw new ProposalController.ProposalSubmissionException("", HttpStatus.INTERNAL_SERVER_ERROR);

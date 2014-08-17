@@ -62,5 +62,17 @@
 	</messages>
 	<!-- /Internationalization -->
 
+
+    <!-- Authorization filter for proposal submission web service -->
+    <filter>
+        <filter-name>cpmp-authorisation</filter-name>
+        <filter-class>org.openmrs.module.conceptpropose.web.filter.AuthorizationFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>cpmp-authorisation</filter-name>
+        <url-pattern>/ws/conceptpropose/concept/*</url-pattern>
+    </filter-mapping>
+
 </module>
 

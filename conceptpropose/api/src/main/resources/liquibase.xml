@@ -79,5 +79,8 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="conceptpropose_20140817_" author="OpenMRS-Australia">
+        <modifyDataType tableName="conceptpropose_proposed_concept" columnName="comment" newDataType="TEXT"/>
+    </changeSet>
 
 </databaseChangeLog>

@@ -46,7 +46,12 @@
         <tr ng-repeat="concept in proposal.concepts">
           <td>{{concept.preferredName}}</td>
           <td>{{concept.datatype}}</td>
-          <td><input ng-model="concept.comment" ng-disabled="isReadOnly"/></td>
+          <td><span ng-show="isReadOnly">
+                <div>{{concept.comment | nl2br}}</div>
+                <textarea cols="80" rows="6" ng-model="concept.newComment" name="newComment"></textarea>
+                <button ng-click="addComment(concept)">Add Comment</button>
+              </span>
+              <input ng-show="!isReadOnly" ng-model="concept.comment" ng-disabled="isReadOnly"/></td>
           <td><button ng-click="removeConcept(concept)" ng-disabled="isReadOnly">Remove</button></td>
         </tr>
       </tbody>

@@ -90,7 +90,9 @@ public class ReviewController {
 		final ProposedConceptReviewPackage aPackage = service.getProposedConceptReviewPackageById(proposalId);
 		final ProposedConceptReview proposedConcept = aPackage.getProposedConcept(conceptId);
 		if (proposedConcept != null) {
-			boolean commentUnchanged = proposedConcept.getReviewComment().equals(updatedProposalReview.getReviewComment());
+			boolean commentUnchanged = (proposedConcept.getReviewComment() == null ?
+					(updatedProposalReview.getReviewComment() != null) :
+					proposedConcept.getReviewComment().equals(updatedProposalReview.getReviewComment()));
 
 			proposedConcept.setReviewComment(updatedProposalReview.getReviewComment());
 			proposedConcept.setStatus(updatedProposalReview.getStatus());
@@ -125,7 +127,7 @@ public class ReviewController {
 				commentDto.setEmail("me@u.com");
 				commentDto.setName("user");
 				commentDto.setComment(proposedConcept.getReviewComment());
-				commentDto.setProposedConceptPackageUuid(aPackage.getUuid());
+				commentDto.setProposedConceptPackageUuid(aPackage.getProposedConceptPackageUuid());
 				commentDto.setProposedConceptUuid(proposedConcept.getProposedConceptUuid());
 			 	addComment.addComment(commentDto, aPackage);
 			}
