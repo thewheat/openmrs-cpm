@@ -7,7 +7,6 @@ define([
     'js/directives/jqueryUiDialog',
     'js/directives/searchConceptDialog',
     'js/filters/proposalStatus',
-    'js/filters/nl2br',
     'js/services/menu'
   ],
   function () {

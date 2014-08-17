@@ -47,7 +47,7 @@
           <td>{{concept.preferredName}}</td>
           <td>{{concept.datatype}}</td>
           <td><span ng-show="isReadOnly">
-                <div>{{concept.comment | nl2br}}</div>
+                <pre>{{concept.comment}}</pre>
                 <textarea cols="80" rows="6" ng-model="concept.newComment" name="newComment"></textarea>
                 <button ng-click="addComment(concept)">Add Comment</button>
               </span>

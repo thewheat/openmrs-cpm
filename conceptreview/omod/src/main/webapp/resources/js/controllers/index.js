@@ -6,6 +6,6 @@ define([
 
     'use strict';
     
-    return angular.module('conceptreview.controllers', ['ngSanitize', 'conceptreview.services']);
+    return angular.module('conceptreview.controllers', ['conceptreview.services']);
   }
 );

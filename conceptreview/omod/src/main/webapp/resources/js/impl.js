@@ -5,8 +5,7 @@ define([
     'js/directives/conceptreviewMenu',
     'js/filters/proposalReviewStatus',
     'js/filters/dashOnNull',
-    'js/filters/boolToYesOrNo',
-    'js/filters/nl2br'
+    'js/filters/boolToYesOrNo'
   ],
   function () {
     'use strict';

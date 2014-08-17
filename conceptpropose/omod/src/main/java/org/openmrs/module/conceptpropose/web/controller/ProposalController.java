@@ -225,7 +225,7 @@ public class ProposalController {
 					incomingComment.setProposedConceptPackageUuid(proposalUuid);
 					incomingComment.setProposedConceptUuid(conceptUuid);
 					if (proposedConceptService.saveProposedConceptPackage(conceptPackage) != null){
-						submitProposal.addComment(incomingComment);
+						// submitProposal.addComment(incomingComment);
 						return createProposedConceptPackageDto(conceptPackage);
 					}
 					else {
@@ -240,6 +240,7 @@ public class ProposalController {
 		return null;
 	}
 
+	// dictionary manager pushes the latest conversation to the proposer
 	@RequestMapping(value = "/conceptpropose/concept/{proposalUuid}/{conceptUuid}/comment", method = RequestMethod.POST)
 	public @ResponseBody ProposedConceptPackageDto addComment(@PathVariable String proposalUuid, @PathVariable String conceptUuid, @RequestBody final CommentDto incomingComment) {
 		// TODO - throw exception on error?
@@ -255,16 +256,17 @@ public class ProposalController {
 				if(proposedConcept.getConcept().getId().equals(sourceConcept.getId())) {
 					String currentComment = proposedConcept.getComment();
 
-					proposedConcept.setComment((currentComment == null ? "" : currentComment + "\n") +
-							"=======================================================\n" +
-							DateTime.now().toString("yyyy-MM-dd:HH:mm:ss ") + incomingComment.getName() + " (" + incomingComment.getEmail() + ")\n" +
-							"-------------------------------------------------------\n" +
-							incomingComment.getComment());
+//					proposedConcept.setComment((currentComment == null ? "" : currentComment + "\n") +
+//							"=======================================================\n" +
+//							DateTime.now().toString("yyyy-MM-dd:HH:mm:ss ") + incomingComment.getName() + " (" + incomingComment.getEmail() + ")\n" +
+//							"-------------------------------------------------------\n" +
+//							incomingComment.getComment());
+					proposedConcept.setComment(incomingComment.getComment());
 
 					incomingComment.setProposedConceptPackageUuid(proposalUuid);
 					incomingComment.setProposedConceptUuid(conceptUuid);
 					if (proposedConceptService.saveProposedConceptPackage(conceptPackage) != null){
-						submitProposal.addComment(incomingComment);
+						// submitProposal.addComment(incomingComment);
 						return createProposedConceptPackageDto(conceptPackage);
 					}
 					else {
@@ -278,6 +280,8 @@ public class ProposalController {
 		}
 		return null;
 	}
+
+	// proposer adds comments to local concept, send to dictionary manager
 	@RequestMapping(value = "/conceptpropose/proposals/{proposalId}/{conceptId}/comment", method = RequestMethod.POST)
 	public @ResponseBody ProposedConceptPackageDto addCommentByIds(@PathVariable int proposalId, @PathVariable int  conceptId, @RequestBody final CommentDto incomingComment) {
 		// TODO - throw exception on error?

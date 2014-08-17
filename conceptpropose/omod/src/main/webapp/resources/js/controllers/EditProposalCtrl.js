@@ -132,6 +132,7 @@ define([
           };
           $http.post(url, data)
             .success(function(data) {
+              concept.comment = data.concepts[0].comment;
               alert('Success');
               console.log(data);
             })
