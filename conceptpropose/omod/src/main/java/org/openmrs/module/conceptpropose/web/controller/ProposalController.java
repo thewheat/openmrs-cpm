@@ -1,7 +1,6 @@
 package org.openmrs.module.conceptpropose.web.controller;
 
 import org.joda.time.DateTime;
-import org.directwebremoting.util.Logger;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.PersonName;
@@ -11,7 +10,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.conceptpropose.ProposedConceptComment;
 import org.openmrs.module.conceptpropose.web.dto.CommentDto;
 import org.openmrs.module.conceptpropose.web.dto.ProposedConceptReviewDto;
-import org.openmrs.module.conceptpropose.web.dto.ProposedConceptReviewPackageDto;
 import org.openmrs.module.conceptpropose.web.service.ConceptProposeMapperService;
 import org.openmrs.module.conceptpropose.PackageStatus;
 import org.openmrs.module.conceptpropose.ProposedConcept;
@@ -41,8 +39,6 @@ import org.directwebremoting.util.Logger;
 
 @Controller
 public class ProposalController {
-    private final Logger log = Logger.getLogger(ProposalController.class);
-
 	private final SubmitProposal submitProposal;
 
 	private final UpdateProposedConceptPackage updateProposedConceptPackage;
@@ -138,34 +134,12 @@ public class ProposalController {
 		return response;
 	}
 
-    @RequestMapping(value = "/conceptpropose/proposals/{proposalId}", method = RequestMethod.GET)
-    public @ResponseBody ProposedConceptPackageDto getProposalById(@PathVariable final String proposalId) {
-        final ProposedConceptPackage proposedConceptPackage = Context.getService(ProposedConceptService.class).getProposedConceptPackageById(Integer.valueOf(proposalId));
+	@RequestMapping(value = "/conceptpropose/proposals/{proposalId}", method = RequestMethod.GET)
+	public @ResponseBody ProposedConceptPackageDto getProposalById(@PathVariable final String proposalId) {
+		final ProposedConceptPackage proposedConceptPackage = Context.getService(ProposedConceptService.class).getProposedConceptPackageById(Integer.valueOf(proposalId));
 //		return createProposedConceptPackageDto(proposedConceptPackageById);
-        return mapperService.convertProposedConceptPackageToProposedConceptDto(proposedConceptPackage);
-    }
-    @RequestMapping(value = "/conceptpropose/proposalstatus/{proposalId}", method = RequestMethod.GET)
-    public @ResponseBody
-    ProposedConceptReviewPackageDto getProposalStatusById(@PathVariable final String proposalId) {
-        final ProposedConceptPackage proposedConceptPackage = Context.getService(ProposedConceptService.class).getProposedConceptPackageById(Integer.valueOf(proposalId));
-        final ProposedConceptReviewPackageDto proposedConceptReviewPackageDto = submitProposal.getProposalStatus(proposedConceptPackage);
-        for(ProposedConcept proposedConcept : proposedConceptPackage.getProposedConcepts()){
-            for(ProposedConceptReviewDto proposedConceptReviewDto : proposedConceptReviewPackageDto.getConcepts()) {
-                if(proposedConceptReviewDto.getSourceUuid().equals(proposedConcept.getConcept().getUuid())) {
-                    proposedConcept.setStatus(proposedConceptReviewDto.getStatus());
-                    break;
-                }
-            }
-        }
-        if(proposedConceptReviewPackageDto.getStatus() == PackageStatus.CLOSED)
-            proposedConceptPackage.setStatus(PackageStatus.CLOSED);
-        else
-            proposedConceptPackage.setStatus(PackageStatus.SUBMITTED);
-
-        if(Context.getService(ProposedConceptService.class).saveProposedConceptPackage(proposedConceptPackage) == null)
-            return null;
-        return proposedConceptReviewPackageDto;
-    }
+		return mapperService.convertProposedConceptPackageToProposedConceptDto(proposedConceptPackage);
+	}
 
 	@RequestMapping(value = "/conceptpropose/proposals/empty", method = RequestMethod.GET)
 	public @ResponseBody ProposedConceptPackageDto getEmptyProposal() {

@@ -16,9 +16,6 @@ define([
         case 'SUBMITTED':
           return 'Submitted';
 
-        case 'CLOSED':
-          return 'Closed';
-
         default:
           return '';
         }
